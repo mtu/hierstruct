@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_layout_file>
+	<ActiveTarget name="Debug" />
+	<File name="Common.h" open="0" top="0" tabpos="6">
+		<Cursor position="0" topLine="0" />
+	</File>
+	<File name="ConvertRST2TST" open="0" top="0" tabpos="0">
+		<Cursor position="19" topLine="0" />
+	</File>
+	<File name="ConvertRST2TST.cpp" open="0" top="0" tabpos="7">
+		<Cursor position="5889" topLine="0" />
+	</File>
+	<File name="SynTreeSQ.cpp" open="1" top="0" tabpos="2">
+		<Cursor position="2188" topLine="48" />
+	</File>
+	<File name="SynTreeSQ.h" open="1" top="0" tabpos="3">
+		<Cursor position="360" topLine="10" />
+	</File>
+	<File name="TransAnalysis.cpp" open="1" top="0" tabpos="5">
+		<Cursor position="3481" topLine="0" />
+	</File>
+	<File name="TransAnalysis.h" open="1" top="1" tabpos="4">
+		<Cursor position="813" topLine="27" />
+	</File>
+	<File name="analysis.cpp" open="1" top="0" tabpos="7">
+		<Cursor position="600" topLine="12" />
+	</File>
+	<File name="analysis.h" open="1" top="0" tabpos="6">
+		<Cursor position="966" topLine="26" />
+	</File>
+	<File name="main.cpp" open="1" top="0" tabpos="1">
+		<Cursor position="2493" topLine="55" />
+	</File>
+</CodeBlocks_layout_file>
