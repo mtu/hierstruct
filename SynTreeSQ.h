@@ -20,7 +20,7 @@ struct TreeNode
 };
 int LeftBranket(const string& s, string & str_flw_lb);
 }
-
+typedef RelationTree::TreeNode RTreeNode;
 class SynTreeSQ
 {
 
@@ -61,5 +61,7 @@ private:
 
 };
 
+vector<RelationTree::TreeNode *> GetAllNode(RelationTree::TreeNode *root);
+vector<RelationTree::TreeNode *> GetAllEdus(RelationTree::TreeNode *root);
 void InitKeySet();
 #endif // SYNTREESQ_H_INCLUDED

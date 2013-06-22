@@ -2,18 +2,26 @@
 #define ANALYSIS_H_INCLUDED
 #include"SynTreeSQ.h"
 
-typedef RelationTree::TreeNode RTreeNode;
+
 struct Span
 {
    int beg;
    int back;
    Span(int m_beg,int m_back):beg(m_beg),back(m_back){}
 };
+struct CountStruct
+{
+  int leftC;
+  int rightC;
+  int matchedC;
+  CountStruct():leftC(0),rightC(0),matchedC(0){};
+};
+
 class AnalysisClass
 {
 public:
   int init(const string&rst_s,vector<string>&src);
-
+  int initAlignConsist(const string&rst_s,vector<string>&srcVec);
 
   void trimPunct(Span * span);
   int Matched(vector<RTreeNode *>&allNodeVec,vector<Span*>&chartSpan);
@@ -21,6 +29,7 @@ public:
   float Matchrate(int matched, int allsize);
   void GetChartPath(vector<string>&src_span, vector<Span*>&chartSpan);
   void ConvertNode2Span(vector<RTreeNode *>&vec,vector<Span*>&node2SpanVec);
+
 
 
 private:
@@ -37,8 +46,9 @@ public:
   vector<Span*> spanVecFromHier;
   vector<Span*>spanVecFromNode;
 
+
 };
-vector<RTreeNode *> GetAllNode(RTreeNode *root);
+
 
 
 #endif // ANALYSIS_H_INCLUDED

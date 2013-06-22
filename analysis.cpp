@@ -4,25 +4,11 @@ int AnalysisClass::init(const string&rst_s,vector<string>&src)
 {
   myRtree = new SynTreeSQ;
   myRtree->ParseTree(rst_s,0);
-  this->allNodes = GetAllNode(&myRtree->root);
+  this->allNodes = GetAllEdus(&myRtree->root);
   GetChartPath(src,this->spanVecFromHier);
 }
-void RecurseNode(RTreeNode *node,vector<RTreeNode *>&vec)
-{
 
-  if(node->children.empty()){return;}
-  for(size_t i(0);i<node->children.size();++i){
-    vec.push_back(node->children[i]);
-    RecurseNode(node->children[i],vec);
-  }
-}
-vector<RTreeNode *> GetAllNode(RTreeNode *root)
-{
-  vector<RTreeNode *> vec;
-  RecurseNode(root,vec);
-  //cerr<<vec.size()<<endl;
-  return vec;
-}
+
 void AnalysisClass::GetChartPath(vector<string>&src, vector<Span*>&chartSpan)
 {
     // src:  1..4
@@ -49,6 +35,7 @@ void AnalysisClass::ConvertNode2Span(vector<RTreeNode *>&vec,vector<Span*>&node2
 }
 bool AnalysisClass::IsMatch(Span*lsp, Span*rsp)
 {
+  //if(lsp->beg == lsp->back) return false;
   if(lsp->beg == rsp->beg && lsp->back == rsp->back)return true;
   else return false;
 }
@@ -97,3 +84,6 @@ int AnalysisClass::Matched(vector<RTreeNode *>&allNodeVec,vector<Span*>&chartSpa
   }//end spanvecfromNode
   return matchedNum;
 }
+
+
+

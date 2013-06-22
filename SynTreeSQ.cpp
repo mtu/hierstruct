@@ -2,6 +2,41 @@
 
 using namespace std;
 using namespace RelationTree;
+
+void RecurseNode(RTreeNode *node,vector<RTreeNode *>&vec)
+{
+
+  if(node->children.empty()){return;}
+  for(size_t i(0);i<node->children.size();++i){
+    vec.push_back(node->children[i]);
+    RecurseNode(node->children[i],vec);
+  }
+}
+void RecurseNodeForEdu(RTreeNode *node,vector<RTreeNode *>&vec)
+{
+
+  if(node->children.empty()){vec.push_back(node);return;}
+  for(size_t i(0);i<node->children.size();++i){
+    //vec.push_back(node->children[i]);
+    RecurseNodeForEdu(node->children[i],vec);
+  }
+}
+vector<RTreeNode *> GetAllNode(RTreeNode *root)
+{
+  vector<RTreeNode *> vec;
+  RecurseNode(root,vec);
+  //cerr<<vec.size()<<endl;
+  return vec;
+}
+vector<RTreeNode *> GetAllEdus(RTreeNode *root)
+{
+  vector<RTreeNode *> vec;
+  RecurseNodeForEdu(root,vec);
+  //cerr<<vec.size()<<endl;
+  return vec;
+}
+
+
 int RelationTree::LeftBranket(const string& s, string & str_flw_lb)
 {
 	if (s.length() < 2 )

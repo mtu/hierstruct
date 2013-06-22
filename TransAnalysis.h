@@ -21,20 +21,25 @@ public:
     int sizeC;
     int sizeE;
 };
-struct CountStruct
-{
-  int leftC;
-  int rightC;
-  int matchedC;
-  CountStruct():leftC(0),rightC(0),matchedC(0){};
-};
+
 
 class TransAnalysisClass
 {
 public:
     int LoadAllTransAlign(const string&chs,const string&eng,const string&align);
+    int LoadAllTransAlign(const string&chs,const string&align);
     void CountMatchedEdu(CountStruct &resultCount);
-    bool IsMatch(RTreeNode *left,RTreeNode *right);
+    int IsMatch(RTreeNode *left,RTreeNode *right,multimap<int,int>&alignmap);
+    void CountAlignConsistentEdus(CountStruct &resultCount);
+    int IsSatisfyAlignConsistent(RTreeNode *left);
+    int CountAllNode(vector<RTreeNode*>vec){
+      int c(0);
+      for(size_t i(0);i<vec.size();++i){
+        if(vec[i]->Begin!=vec[i]->Back)
+          c +=1;
+      }
+      return c;}
+
 public:
     SynTreeSQ *ChTCTtree;
     SynTreeSQ *EnTCTtree;

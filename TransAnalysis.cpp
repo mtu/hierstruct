@@ -1,5 +1,10 @@
 #include"TransAnalysis.h"
-
+int GetLargest(multimap<int,int>::iterator left,multimap<int,int>::iterator right)
+{
+    multimap<int,int>::iterator iter = left;int res = iter->second;
+    while(iter!=right){res = iter->second;iter++;}
+    return res;
+}
 void AlignedRel::LoadAlignedSentence(const string &s)
 {
 using namespace boost;
@@ -97,35 +102,111 @@ int TransAnalysisClass::LoadAllTransAlign(const string&chs,const string&eng,cons
   if(ChTCTtree->ParseTree(chs,0)==-1)return -1;
   if(EnTCTtree->ParseTree(eng,0)==-1)return -1;
   alignInfo.LoadAlignedSentence(align);
-  allChsNodes = GetAllNode(&ChTCTtree->root);
-  allEngNodes = GetAllNode(&EnTCTtree->root);
+
+  //cerr<<allEngNodes.size();
+  return 0;
+}
+int TransAnalysisClass::LoadAllTransAlign(const string&chs,const string&align)
+{
+  ChTCTtree = new SynTreeSQ;
+  if(ChTCTtree->ParseTree(chs,0)==-1)return -1;
+  alignInfo.LoadAlignedSentence(align);
+
+  //cerr<<allEngNodes.size();
   return 0;
 }
 void TransAnalysisClass::CountMatchedEdu(CountStruct &resultCount)
 {
+  allChsNodes = GetAllNode(&ChTCTtree->root);
+  allEngNodes = GetAllNode(&EnTCTtree->root);
   for(size_t i(0);i<allChsNodes.size();++i){
     for(size_t j(0);j<allEngNodes.size();++j){
-      if(IsMatch(allChsNodes[i],allEngNodes[j])){
+      if(IsMatch(allChsNodes[i],allEngNodes[j],this->alignInfo.C2EMap)>0 &&
+         IsMatch(allEngNodes[j],allChsNodes[i],this->alignInfo.E2CMap)>0){
         resultCount.matchedC +=1;
+        break;
       }
     }
   }
-  resultCount.leftC += allChsNodes.size();
-  resultCount.rightC += allEngNodes.size();
+//  for(size_t i(0);i<allEngNodes.size();++i){
+//    for(size_t j(0);j<allChsNodes.size();++j){
+//      if(IsMatch(allEngNodes[i],allChsNodes[j],this->alignInfo.E2CMap)>0){
+//        resultCount.matchedC +=1;
+//        break;
+//      }
+//    }
+//  }
+  resultCount.leftC += CountAllNode(allChsNodes);
+  resultCount.rightC += CountAllNode(allEngNodes);
+
 }
-bool TransAnalysisClass::IsMatch(RTreeNode *left,RTreeNode *right)
+int TransAnalysisClass::IsMatch(RTreeNode *left,RTreeNode *right,multimap<int,int>&mmap)
 {
   int lbeg = left->Begin;int lback = left->Back;
   int rbeg = right->Begin;int rback = right->Back;
   int mat(0);
+  multimap<int,int>::iterator loweriter,upperiter;
+  if(lback==lbeg)return -2;//标点符号不算
   for(size_t i(lbeg);i<=lback;++i){
-    int lowerbound = this->alignInfo.C2EMap.lower_bound(i)->second;
-    int upperbound = this->alignInfo.C2EMap.upper_bound(i)->second;
-    if(lowerbound>=rbeg && upperbound <= rback+1){ //条件可以修改更宽一点
+    if(mmap.find(i)==mmap.end())
+    {//对空
+        mat +=1;
+        continue;
+    }
+    loweriter = mmap.lower_bound(i);
+    upperiter = mmap.upper_bound(i);
+    int lowerbound = loweriter->second;
+    int upperbound = GetLargest(loweriter,upperiter);
+    if(lowerbound>=rbeg && upperbound <= rback){ //条件可以修改更宽一点
       mat +=1;
     }
   }
-  float alpha(0.8);//相似度阈值
-  if(mat>=(lback-lbeg)*alpha)return true;
-  else return false;
+  float alpha(1);//相似度阈值
+  if(mat>=(lback-lbeg)*alpha)return 1;
+  else return -1;
 }
+void TransAnalysisClass::CountAlignConsistentEdus(CountStruct&resultCount)
+{
+  allChsNodes = GetAllEdus(&ChTCTtree->root);
+  //allEngNodes = GetAllEdus(&EnTCTtree->root);
+  for(size_t i(0);i<allChsNodes.size();++i)
+  {
+    if(IsSatisfyAlignConsistent(allChsNodes[i])==1){
+      resultCount.matchedC += 1;
+    }
+  }
+  resultCount.leftC += CountAllNode(allChsNodes);
+}
+int TransAnalysisClass::IsSatisfyAlignConsistent(RTreeNode *left)
+{
+  int lbeg = left->Begin;int lback = left->Back;
+  if(lback==lbeg)return -2;//标点符号不算
+  int start(9999),end(-1);
+  multimap<int,int>::iterator loweriter,upperiter;
+  for(size_t i(lbeg);i<=lback;++i){
+    if(this->alignInfo.C2EMap.find(i)==this->alignInfo.C2EMap.end()){
+    //对空
+      continue;
+    }
+    loweriter = this->alignInfo.C2EMap.lower_bound(i);
+    upperiter = this->alignInfo.C2EMap.upper_bound(i);
+    int lowerbound = loweriter->second;
+    int backbound = GetLargest(loweriter,upperiter);
+    if(lowerbound<start)start = lowerbound;
+    if(backbound>end)end=backbound;
+  }
+  if(end<0 || start > end)return 1;
+
+  int rev_lower,rev_upper;
+  for(size_t i(start);i<end;++i){
+    if(this->alignInfo.E2CMap.find(i)==this->alignInfo.E2CMap.end())continue;
+    loweriter = this->alignInfo.E2CMap.lower_bound(i);rev_lower = loweriter->second;
+    upperiter = this->alignInfo.E2CMap.upper_bound(i);
+    while(loweriter!=upperiter){rev_upper = loweriter->second;loweriter++;}
+    if(rev_lower<lbeg||rev_upper>lback){
+       return -1;
+    }
+  }
+  return 1;
+}
+
